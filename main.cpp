@@ -12,14 +12,22 @@
  */
 
 #include <cstdlib>
+#include <iostream>
+#include "Process.h"
 
 using namespace std;
 
-/*
- * 
- */
-int main(int argc, char** argv) {
 
+int main(int argc, char** argv) {
+    if (argc < 2 || argc >= 3) {
+        std::cout << "Usage: " << argv[0] << " + Trace File Name" << std::endl;
+        return 1;
+    }
+    std::string fileName(argv[1]);
+    Process p(fileName);
+    
+    p.Exec();
+    
     return 0;
 }
 
