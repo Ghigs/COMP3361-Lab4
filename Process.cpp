@@ -161,7 +161,14 @@ void Process::memsize(address memsize) {
     if (memsize > 4000000) {
         memsize = 4000000;
     }
-    this->memory = std::vector<byte>(memsize);
+    
+    int i = 0;
+    if ((memsize % mem::kPageSize) != 0) {
+        i++;
+    }
+    memsize = (memsize / mem::kPageSize) + i;
+    virtMem(memsize);
+    //this->memory = std::vector<byte>(memsize);
 }
 
 void Process::cmp(address addr1, address addr2, int count) const {

@@ -140,7 +140,8 @@ private:
      * fileOpen: boolean stating open status of file
      * lineCount: integer storing the current line count for output format
      */
-    std::vector<byte> memory;
+    //std::vector<byte> memory;
+    mem::MMU virtMem;
     bool fileOpen;
     int lineCount;
     
