@@ -166,18 +166,26 @@ void Process::memsize(address memsize) {
     if ((memsize % mem::kPageSize) != 0) {
         i++;
     }
-    memsize = (memsize / mem::kPageSize) + i;
-    virtMem(memsize);
+    mem::Addr size = (memsize / mem::kPageSize) + i;
+    mem::MMU virtMem(size);
     //this->memory = std::vector<byte>(memsize);
 }
 
 void Process::cmp(address addr1, address addr2, int count) const {
     for (int i = 0; i < count; i++) {
-        if (this->memory[addr1+i] != this->memory[addr2+i]) {
+        uint8_t val1 = 0; 
+        uint8_t val2 = 0;
+        mem::Addr mAddr1 = addr1 + i;
+        mem::Addr mAddr2 = addr2 + i;
+        
+        virtMem.movb(&val1, mAddr1);
+        virtMem.movb(&val2, mAddr2);
+        
+        if (val1 != val2) {
             std::cerr << "cmp error, addr1 = " << std::setfill('0') << std::setw(7) << std::hex << addr1+i 
-                    << ", value = " << std::setfill('0') << std::setw(2) << static_cast<int>(this->memory[addr1+i]) 
+                    << ", value = " << std::setfill('0') << std::setw(2) << static_cast<int>(val1) 
                     << ", addr2 = " << std::setfill('0') << std::setw(7) << addr2+i 
-                    << ", value = " << std::setfill('0') << std::setw(2) << static_cast<int>(this->memory[addr2+i]) 
+                    << ", value = " << std::setfill('0') << std::setw(2) << static_cast<int>(val2) 
                     << std::endl;
         }
     }
@@ -185,31 +193,36 @@ void Process::cmp(address addr1, address addr2, int count) const {
 
 void Process::set(address addr, std::vector<byte> vals) {
     for (std::vector<byte>::iterator it = vals.begin() ; it != vals.end(); ++it) {
-        this->memory[addr] = *it;
+        virtMem.movb(addr, it);
         addr++;
     }
 }
 
 void Process::fill(address addr, byte val, int count) {
     for (int i = 0; i < count; i++ ) {
-        this->memory[addr+i] = val;
+        virtMem.movb((addr + i), &val);
     }
 }
 
 void Process::dup(address srcAddr, address destAddr, int count) {
     for (int i = 0; i < count; i++ ) {
-        this->memory[destAddr+i] = this->memory[srcAddr+i];
+        uint8_t val = 0;
+        virtMem.movb(&val, (srcAddr + i));
+        virtMem.movb((destAddr + i), &val);
     }
 }
 
 void Process::print(address addr, int count) const {
     int byteCounter = 0;
     for (int i = 0; i < count; i++) {
+        uint8_t val = 0;
+        virtMem.movb(&val, (addr + i));
+                
         if (i % 16 == 0) {
             std::cout << std::setfill('0') << std::setw(7) << std::hex << addr+i << ": "; 
         }
         std::cout << std::setfill('0') << std::setw(2) << std::hex 
-                << static_cast<int>(this->memory[addr+i]) << " ";
+                << static_cast<int>(val) << " ";
         byteCounter++;
         if (byteCounter == 16) {
             std::cout << std::dec << std::endl;
