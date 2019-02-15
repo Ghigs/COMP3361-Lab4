@@ -92,6 +92,7 @@ private:
      * @param memsize: value to set the size of the memory vector 
      */
     void memsize(address memsize);
+    
     /**
      * cmp: Compares count bytes after addr1 to count bytes after addr2
      * @param addr1: First address to compare
@@ -99,12 +100,14 @@ private:
      * @param count: Number of bytes after addresses to compare
      */
     void cmp(address addr1, address addr2, int count) const;
+    
     /**
      * set: sets bytes starting at addr to vals
      * @param addr: address at which to begin setting bytes
      * @param vals: values to set bytes to
      */
     void set(address addr, std::vector<byte> vals);
+    
     /**
      * fill: fills count bytes starting at addr with the value val
      * @param addr: address at which to begin filling bytes
@@ -112,6 +115,7 @@ private:
      * @param count: number of bytes after address to fill
      */
     void fill(address addr, byte val, int count);
+    
     /**
      * dup: duplicates count bytes from srcAddr and pastes them at destAddr
      * @param srcAddr: source address to duplicate bytes
@@ -119,6 +123,7 @@ private:
      * @param count: number of bytes to duplicate
      */
     void dup(address srcAddr, address destAddr, int count);
+    
     /**
      * print: prints count bytes from addr
      * @param addr: address to print from
@@ -136,12 +141,12 @@ private:
     std::istringstream currentLineStream;
     
     /*
-     * memory: vector of uint8_t bytes simulating memory
+     * virtMem: MMU object to simulate memory
      * fileOpen: boolean stating open status of file
      * lineCount: integer storing the current line count for output format
      */
     //std::vector<byte> memory;
-    mem::MMU virtMem;
+    mem::MMU* virtMem;
     bool fileOpen;
     int lineCount;
     
@@ -151,8 +156,6 @@ private:
      */
     Command currentCommand;
     address currentAddress;
-    
-
 };
 
 #endif /* PROCESS_H */

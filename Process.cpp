@@ -167,7 +167,7 @@ void Process::memsize(address memsize) {
         i++;
     }
     mem::Addr size = (memsize / mem::kPageSize) + i;
-    mem::MMU virtMem(size);
+    virtMem = new mem::MMU(size);
     //this->memory = std::vector<byte>(memsize);
 }
 
@@ -178,8 +178,8 @@ void Process::cmp(address addr1, address addr2, int count) const {
         mem::Addr mAddr1 = addr1 + i;
         mem::Addr mAddr2 = addr2 + i;
         
-        virtMem.movb(&val1, mAddr1);
-        virtMem.movb(&val2, mAddr2);
+        virtMem->movb(&val1, mAddr1);
+        virtMem->movb(&val2, mAddr2);
         
         if (val1 != val2) {
             std::cerr << "cmp error, addr1 = " << std::setfill('0') << std::setw(7) << std::hex << addr1+i 
@@ -193,22 +193,22 @@ void Process::cmp(address addr1, address addr2, int count) const {
 
 void Process::set(address addr, std::vector<byte> vals) {
     for (std::vector<byte>::iterator it = vals.begin() ; it != vals.end(); ++it) {
-        virtMem.movb(addr, it);
+        virtMem->movb(addr, &(*it));
         addr++;
     }
 }
 
 void Process::fill(address addr, byte val, int count) {
     for (int i = 0; i < count; i++ ) {
-        virtMem.movb((addr + i), &val);
+        virtMem->movb((addr + i), &val);
     }
 }
 
 void Process::dup(address srcAddr, address destAddr, int count) {
     for (int i = 0; i < count; i++ ) {
         uint8_t val = 0;
-        virtMem.movb(&val, (srcAddr + i));
-        virtMem.movb((destAddr + i), &val);
+        virtMem->movb(&val, (srcAddr + i));
+        virtMem->movb((destAddr + i), &val);
     }
 }
 
@@ -216,7 +216,7 @@ void Process::print(address addr, int count) const {
     int byteCounter = 0;
     for (int i = 0; i < count; i++) {
         uint8_t val = 0;
-        virtMem.movb(&val, (addr + i));
+        virtMem->movb(&val, (addr + i));
                 
         if (i % 16 == 0) {
             std::cout << std::setfill('0') << std::setw(7) << std::hex << addr+i << ": "; 
