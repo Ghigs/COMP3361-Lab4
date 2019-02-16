@@ -35,7 +35,7 @@ Process::~Process() {
 void Process::Exec() {
     std::string line;
     while(std::getline(this->fileStream, line)) {
-        this->lineCount += 1;
+        lineCount += 1;
         this->currentLineStream = std::istringstream(line);
         
         std::string inputAddress;
@@ -47,7 +47,7 @@ void Process::Exec() {
             // the address couldn't be converted, probably because the input
             // is a star denoting a comment, so skip command processing
             // and just print out the line
-            std::cout << this->lineCount << ":" << line << std::endl;
+            std::cout << lineCount << ":" << line << std::endl;
             continue;
         }
         this->currentAddress = address;
@@ -79,7 +79,7 @@ void Process::Exec() {
             arguments.push_back(argument);
         }
         
-        std::cout << std::dec << this->lineCount << ":" << line << std::endl;
+        std::cout << std::dec << lineCount << ":" << line << std::endl;
         
         this->handleCommand(this->currentCommand, this->currentAddress, arguments);
     }
@@ -182,11 +182,11 @@ void Process::cmp(address addr1, address addr2, int count) const {
         virtMem->movb(&val2, mAddr2);
         
         if (val1 != val2) {
-            std::cerr << "cmp error, addr1 = " << std::setfill('0') << std::setw(7) << std::hex << addr1+i 
+            std::cout << "cmp error, addr1 = " << std::setfill('0') << std::setw(7) << std::hex << addr1+i 
                     << ", value = " << std::setfill('0') << std::setw(2) << static_cast<int>(val1) 
                     << ", addr2 = " << std::setfill('0') << std::setw(7) << addr2+i 
                     << ", value = " << std::setfill('0') << std::setw(2) << static_cast<int>(val2) 
-                    << std::endl;
+                    << std::dec << std::endl;
         }
     }
 }
